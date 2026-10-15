@@ -45,5 +45,11 @@ pipeline {
                 '''
             }
         }
+        stage('Déploiement recette') {
+            steps {
+                sh 'sh deploy.sh recette 8081 ${IMAGE}'
+                sh 'sh smoke_test.sh http://demo-app-recette:8000 ${TAG}'
+            }
+        }
     }
 }
