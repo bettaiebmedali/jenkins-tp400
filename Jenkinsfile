@@ -51,5 +51,27 @@ pipeline {
                 sh 'sh smoke_test.sh http://demo-app-recette:8000 ${TAG}'
             }
         }
+            stage('Validation production') {
+            when {
+                expression { params.DEPLOYER_PROD }
+            }
+            steps {
+                timeout(time: 5, unit: 'MINUTES') {
+                    input message: "Déployer la version ${env.TAG} en production ?",
+                          ok: 'Déployer',
+                          submitter: 'admin'
+                }
+            }
+        }
+
+        stage('Déploiement production') {
+            when {
+                expression { params.DEPLOYER_PROD }
+            }
+            steps {
+                sh 'sh deploy.sh production 8082 ${IMAGE}'
+                sh 'sh smoke_test.sh http://demo-app-production:8000 ${TAG}'
+            }
+        }
     }
 }
